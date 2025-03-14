@@ -1,0 +1,11 @@
+[requires]
+tinyxml2/10.0.0
+boost/1.86.0
+jsoncpp/1.9.6
+
+[generators]
+CMakeDeps
+CMakeToolchain
+
+[tool_requires]
+cmake/3.22.6
