@@ -1,4 +1,5 @@
 #include "MulticastReceiver.hpp"
+#include "utils.hpp"
 
 MulticastReceiver::MulticastReceiver(const MulticastConfig &config, ConcurrentQueue<std::string> &dataQueue)
     : config(config), dataQueue(dataQueue) {}
@@ -42,6 +43,7 @@ void MulticastReceiver::listenOnSocket(const MulticastTarget &target)
         ssize_t len = recvfrom(sockfd, buffer, sizeof(buffer), 0, (sockaddr *)&src_addr, &addr_len);
         if (len > 0)
         {
+            printBinaryAsHexAndDecimal(buffer, len);
             std::string data(buffer, len);
             dataQueue.push(data);
         }

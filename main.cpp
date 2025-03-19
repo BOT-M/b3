@@ -11,6 +11,12 @@ void signalHandler(int signum)
 
 int main(int argc, char *argv[])
 {
+    auto logger = spdlog::basic_logger_mt("file_logger", "logs/app.log");
+    spdlog::set_default_logger(logger);
+
+    spdlog::info("Logging to a file.");
+    spdlog::set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
+    
     SignalHandler &handler = SignalHandler::getInstance();
     handler.registerHandler(SIGINT, signalHandler);
     handler.registerHandler(SIGTERM, signalHandler);
@@ -24,6 +30,14 @@ int main(int argc, char *argv[])
     if (filename.empty())
         std::cerr << "未指定组播配置文件" << std::endl;
 
+    if (filename == "123")
+    {
+        ConcurrentQueue<std::string> dataQueue;
+        DataProcessor processor(filename, dataQueue);
+       
+        return 0;
+    }
+
     MulticastConfig config;
     if (!config.loadFromFile(filename))
     {
@@ -36,26 +50,13 @@ int main(int argc, char *argv[])
         xml_filename = argv[2];
     }
     loadSchema(xml_filename);
-    int isFile = 0;
-    if (argc > 3)
-    {
-        std::cout << "argv3:" << argv[3] << std::endl;
-        isFile = atoi(argv[3]);
-    }
+
     ConcurrentQueue<std::string> dataQueue;
     DataProcessor processor(dataQueue);
     std::thread processorThread(&DataProcessor::startProcessing, &processor);
-    if (isFile)
-    {
-    }
-    else
-    {
-
-        MulticastReceiver receiver(config, dataQueue);
-        std::thread receiverThread(&MulticastReceiver::startListening, &receiver);
-        receiverThread.join();
-    }
-
+    MulticastReceiver receiver(config, dataQueue);
+    std::thread receiverThread(&MulticastReceiver::startListening, &receiver);
+    receiverThread.join();
     processorThread.join();
 
     return 0;

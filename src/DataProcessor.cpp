@@ -2,26 +2,18 @@
 #include "std.hpp"
 #include "basestrcut.hpp"
 
-DataProcessor::DataProcessor(ConcurrentQueue<std::string> &dataQueue, int isReadFile) : dataQueue(dataQueue), isReadFile_(isReadFile)
+DataProcessor::DataProcessor(const std::string &filename, ConcurrentQueue<std::string> &dataQueue) : file_name_(filename), dataQueue(dataQueue)
+{
+}
+DataProcessor::DataProcessor(ConcurrentQueue<std::string> &dataQueue) : dataQueue(dataQueue)
 {
     generate_file_name();
-    if (isReadFile_ = 0)
+
+    ofs_.open(file_name_, std::ios::binary | std::ios::app);
+    if (!ofs_.is_open())
     {
-        ofs_.open(file_name_, std::ios::binary | std::ios::app);
-        if (!ofs_.is_open())
-        {
-            std::cerr << "Failed to open file: " << file_name_ << std::endl;
-            return;
-        }
-    }
-    else if (isReadFile_ = 1)
-    {
-        std::ifstream ifs(file_name_, std::ios::in | std::ios::binary);
-        if (!ifs.is_open())
-        {
-            std::cerr << "Failed to open file for binary reading: " << file_name_ << std::endl;
-            return;
-        }
+        std::cerr << "Failed to open file: " << file_name_ << std::endl;
+        return;
     }
 }
 
@@ -98,7 +90,7 @@ void DataProcessor::read_data()
     std::string line;
     while (std::getline(ifs, line)) // 按行读取数据
     {
-        process_line(line); // 处理每一行的数据
+        analyze_data(line.c_str(), line.size());
     }
 
     ifs.close();
@@ -112,14 +104,8 @@ void DataProcessor::analyze_data(const char *buffer, ssize_t len)
         return;
     }
 
-    std::cout << " len :" << len << std::endl;
-
     PacketHeader header;
     memcpy(&header, buffer, sizeof(PacketHeader));
-
-    header.SequenceVersion = ntohs(header.SequenceVersion);
-    header.SequenceNumber = ntohl(header.SequenceNumber);
-    header.SendingTime = be64toh(header.SendingTime);
 
     header.print();
 

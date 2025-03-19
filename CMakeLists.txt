@@ -3,16 +3,18 @@ project(MulticastReceiver)
 
 
 # 设置 C++ 标准
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 find_package(tinyxml2)
 find_package(Boost)
 find_package(jsoncpp)
+find_package(spdlog)
 
 # 包含头文件目录
 include_directories(
     ${CMAKE_SOURCE_DIR}/inc
+    ${CMAKE_SOURCE_DIR}/b3_market_data
 )
 
 # 查找 src 目录下的所有 cpp 文件
@@ -26,6 +28,7 @@ endif()
 
 # 生成可执行文件
 add_executable(MulticastReceive ${SOURCES} main.cpp)
+add_executable(readfile ${SOURCES} readfile.cpp)
 
 # 链接 pthread
 target_link_libraries(MulticastReceive 
@@ -33,4 +36,5 @@ target_link_libraries(MulticastReceive
     tinyxml2::tinyxml2
     boost::boost
     JsonCpp::JsonCpp
+    spdlog::spdlog
     )
