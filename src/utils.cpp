@@ -20,6 +20,25 @@ void print_beijing_time(uint64_t nanoseconds)
     std::cout << "北京时间: " << buffer << std::endl;
 }
 
+void print_brazil_b3_time(uint64_t nanoseconds)
+{
+    using namespace std::chrono;
+
+    // 转换纳秒到秒
+    std::time_t seconds = nanoseconds / 1'000'000'000;
+
+    // 调整到巴西 B3 交易所时间（UTC-3）
+    seconds -= 3 * 3600; // 直接减去 3 小时的秒数
+
+    // 转换为本地时间
+    std::tm *tm_time = std::gmtime(&seconds); // 仍然用 UTC 解析时间
+
+    // 格式化时间输出
+    char buffer[100];
+    std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", tm_time);
+    std::cout << "巴西 B3 交易所时间 (UTC-3): " << buffer << std::endl;
+}
+
 void printBinaryAsHexAndDecimal(const char *buffer, size_t length)
 {
     spdlog::info("start len: {} Printing binary data as hexadecimal and decimal:", length);
@@ -47,6 +66,7 @@ size_t processData(std::string &data)
     b3_market_data::PacketHeader packHead(data.data(), data.size());
     std::cout << packHead << std::endl;
     print_beijing_time(packHead.sendingTime());
+    print_brazil_b3_time(packHead.sendingTime());
     processedLength += packHead.encodedLength();
 
     while (data.size() > processedLength)
@@ -60,7 +80,6 @@ size_t processData(std::string &data)
         std::cout << msgHead << std::endl;
         std::cout << "msgHead: "  << msgHead.encodedLength() << std::endl;
         processedLength += msgHead.encodedLength();
-
         switch (msgHead.templateId())
         {
         case SecurityStatus:
