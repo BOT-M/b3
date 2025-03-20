@@ -17,6 +17,8 @@ include_directories(
     ${CMAKE_SOURCE_DIR}/b3_market_data
 )
 
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")  # 控制所有可执行文件及 Windows 动态库[1,4](@ref)
+
 # 查找 src 目录下的所有 cpp 文件
 file(GLOB SOURCES ${CMAKE_SOURCE_DIR}/src/*.cpp)
 

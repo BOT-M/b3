@@ -25,7 +25,7 @@ void DataProcessor::startProcessing()
         if (dataQueue.pop(data))
         {
             write_data(data.c_str(), data.size());
-            analyze_data(data.c_str(), data.size());
+            processData(data);
         }
     }
 }
@@ -89,40 +89,8 @@ void DataProcessor::read_data()
     std::string line;
     while (std::getline(ifs, line)) // 按行读取数据
     {
-        analyze_data(line.c_str(), line.size());
+
     }
 
     ifs.close();
-}
-
-void DataProcessor::analyze_data(const char *buffer, ssize_t len)
-{
-    if (len < sizeof(PacketHeader))
-    {
-        std::cerr << "数据包长度不足 16 字节，丢弃数据包" << std::endl;
-        return;
-    }
-
-    PacketHeader header;
-    memcpy(&header, buffer, sizeof(PacketHeader));
-
-    header.print();
-
-    // 解析 SBE 消息
-    ssize_t offset = sizeof(PacketHeader);
-    while (offset + 12 <= len)
-    {
-        MessageHeader msgHeader;
-        memcpy(&msgHeader, buffer + offset, sizeof(MessageHeader));
-
-        msgHeader.messageLength = ntohs(msgHeader.messageLength);
-        msgHeader.encodingType = ntohs(msgHeader.encodingType);
-        msgHeader.blockLength = ntohs(msgHeader.blockLength);
-        msgHeader.templateID = ntohs(msgHeader.templateID);
-        msgHeader.schemaID = ntohs(msgHeader.schemaID);
-        msgHeader.schemaVersion = ntohs(msgHeader.schemaVersion);
-
-        msgHeader.print();
-        offset += msgHeader.messageLength;
-    }
 }

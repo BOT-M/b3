@@ -33,7 +33,7 @@ public:
             std::string data = leftover + std::string(buffer.data(), bytesRead);
 
             // 处理数据，并返回未处理完的数据
-            leftover = processData(data);
+            leftover = processValue(data);
         }
 
         // 处理最后剩余的 leftover（如果有的话）
@@ -52,7 +52,7 @@ private:
      * @param data  当前读取到的数据（包含上次未处理完的部分）
      * @return      返回未处理完的部分（供下一次拼接）
      */
-    std::string processData(const std::string &data)
+    std::string processValue(const std::string &data)
     {
         size_t processedLength = 0;
 
@@ -65,7 +65,7 @@ private:
                 cleanedData.push_back(c);
             }
         }
-        processedLength = processLine(cleanedData);
+        processedLength = processData(cleanedData);
 
         // 返回未处理完的部分（例如最后不完整的一行）
         return data.substr(processedLength);

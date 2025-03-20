@@ -10,7 +10,6 @@ public:
     DataProcessor(const std::string &filename, ConcurrentQueue<std::string> &dataQueue);
     DataProcessor(ConcurrentQueue<std::string> &dataQueue);
     void startProcessing();
-    void analyze_data(const char *data, ssize_t len);
 
 private:
     void generate_file_name();

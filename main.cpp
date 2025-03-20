@@ -30,27 +30,12 @@ int main(int argc, char *argv[])
     if (filename.empty())
         std::cerr << "未指定组播配置文件" << std::endl;
 
-    if (filename == "123")
-    {
-        ConcurrentQueue<std::string> dataQueue;
-        DataProcessor processor(filename, dataQueue);
-       
-        return 0;
-    }
-
     MulticastConfig config;
     if (!config.loadFromFile(filename))
     {
         return 1;
     }
-    std::string xml_filename = "b3-market-data-messages-1.9.0.xml";
-    if (argc > 2)
-    {
-        std::cout << "argv2:" << argv[2] << std::endl;
-        xml_filename = argv[2];
-    }
-    loadSchema(xml_filename);
-
+   
     ConcurrentQueue<std::string> dataQueue;
     DataProcessor processor(dataQueue);
     std::thread processorThread(&DataProcessor::startProcessing, &processor);
