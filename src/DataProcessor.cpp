@@ -74,7 +74,6 @@ void DataProcessor::write_data(const char *buffer, ssize_t len)
         return;
     }
     ofs_.write(buffer, len);
-    ofs_ << '\n'; // 每个buffer占一行
     ofs_.flush(); // 确保数据及时写入
 }
 

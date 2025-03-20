@@ -28,10 +28,19 @@ endif()
 
 # 生成可执行文件
 add_executable(MulticastReceive ${SOURCES} main.cpp)
-add_executable(readfile ${SOURCES} readfile.cpp)
 
 # 链接 pthread
 target_link_libraries(MulticastReceive 
+    pthread 
+    tinyxml2::tinyxml2
+    boost::boost
+    JsonCpp::JsonCpp
+    spdlog::spdlog
+    )
+
+add_executable(readfile ${SOURCES} readfile.cpp)
+
+target_link_libraries(readfile 
     pthread 
     tinyxml2::tinyxml2
     boost::boost
