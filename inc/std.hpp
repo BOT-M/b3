@@ -15,6 +15,7 @@
 
 #include <atomic>
 #include <algorithm>
+#include <set>
 #include <iostream>
 #include <fstream>
 #include <sstream>

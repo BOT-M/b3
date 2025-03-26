@@ -1,8 +1,10 @@
 #pragma once
 #include "std.hpp"
 #include "utils.hpp"
+#include "logger.hpp"
 
 // 定义 Business Messages ID
+constexpr int Sequence_2 = 2;
 constexpr int SecurityStatus = 3;
 constexpr int SecurityGroupPhase = 10;
 constexpr int SecurityDefinition = 12;
