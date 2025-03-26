@@ -3,6 +3,8 @@
 #include "DataProcessor.hpp"
 #include "SignalHandler.hpp"
 #include "xml.hpp"
+#include "logger.hpp"
+
 void signalHandler(int signum)
 {
     std::cout << "\n📢 收到信号 " << signum << "，程序即将退出...\n";
@@ -11,12 +13,8 @@ void signalHandler(int signum)
 
 int main(int argc, char *argv[])
 {
-    auto logger = spdlog::basic_logger_mt("file_logger", "logs/app.log");
-    spdlog::set_default_logger(logger);
+    Logger::init();  // 初始化日志
 
-    spdlog::info("Logging to a file.");
-    spdlog::set_pattern("[%Y-%m-%d %H:%M:%S] [%^%l%$] %v");
-    
     SignalHandler &handler = SignalHandler::getInstance();
     handler.registerHandler(SIGINT, signalHandler);
     handler.registerHandler(SIGTERM, signalHandler);
