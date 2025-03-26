@@ -4,8 +4,10 @@
 #include "logger.hpp"
 
 // 定义 Business Messages ID
+constexpr int SequenceReset_1 = 1;
 constexpr int Sequence_2 = 2;
 constexpr int SecurityStatus = 3;
+constexpr int EmptyBook_9 = 9;
 constexpr int SecurityGroupPhase = 10;
 constexpr int SecurityDefinition = 12;
 constexpr int OpeningPrice = 15;

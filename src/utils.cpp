@@ -17,7 +17,7 @@ void print_beijing_time(uint64_t nanoseconds)
     char buffer[100];
     std::strftime(buffer, sizeof(buffer), "%Y-%m-%d %H:%M:%S", tm_time);
 
-    std::cout << "北京时间: " << buffer << std::endl;
+    INFO("北京时间:{}", buffer);
 }
 
 void print_brazil_b3_time(uint64_t nanoseconds)
@@ -78,8 +78,7 @@ size_t processData(std::string &data)
         b3_market_data::MessageHeader msgHead(data.data(), processedLength, data.size(), 10);
         std::cout << msgHead << std::endl;
         processedLength += msgHead.encodedLength();
-        
-        
+
         switch (msgHead.templateId())
         {
         case Sequence_2:
