@@ -6,15 +6,14 @@ project(MulticastReceiver)
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(tinyxml2)
 find_package(Boost)
 find_package(jsoncpp)
 find_package(spdlog)
 
 # 包含头文件目录
 include_directories(
-    ${CMAKE_SOURCE_DIR}/inc
-    ${CMAKE_SOURCE_DIR}/b3_market_data
+    /home/yueran/work/b3/inc
+    /home/yueran/work/b3/b3_market_data
 )
 
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/bin")  # 控制所有可执行文件及 Windows 动态库[1,4](@ref)
@@ -34,18 +33,8 @@ add_executable(MulticastReceive ${SOURCES} main.cpp)
 # 链接 pthread
 target_link_libraries(MulticastReceive 
     pthread 
-    tinyxml2::tinyxml2
     boost::boost
     JsonCpp::JsonCpp
     spdlog::spdlog
     )
 
-add_executable(readfile ${SOURCES} readfile.cpp)
-
-target_link_libraries(readfile 
-    pthread 
-    tinyxml2::tinyxml2
-    boost::boost
-    JsonCpp::JsonCpp
-    spdlog::spdlog
-    )

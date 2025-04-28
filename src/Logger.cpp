@@ -1,9 +1,27 @@
 #include "logger.hpp"
 
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+#include <chrono>
+#include <ctime>
+
 std::shared_ptr<spdlog::logger> Logger::logger_ = nullptr;
 
-void Logger::init(const std::string& log_dir, size_t max_size, size_t max_files) {
-    std::string log_filename = log_dir + "/logfile.log";
+std::string GenerateLogFilename(const std::string &log_dir)
+{
+    auto now = std::chrono::system_clock::now();
+    std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+
+    std::stringstream ss;
+    ss << log_dir << "/B3_"
+       << std::put_time(std::localtime(&now_time), "%Y-%m-%d_%H-%M-%S")
+       << ".log";
+    return ss.str();
+}
+void Logger::init(const std::string &log_dir, size_t max_size, size_t max_files)
+{
+    std::string log_filename = GenerateLogFilename(log_dir);
 
     // 创建文件日志 sink（滚动文件日志，每个文件 500MB，最多保留 10 个文件）
     auto file_sink = std::make_shared<spdlog::sinks::rotating_file_sink_mt>(log_filename, max_size, max_files);
@@ -24,6 +42,7 @@ void Logger::init(const std::string& log_dir, size_t max_size, size_t max_files)
     spdlog::info("Logger initialized.");
 }
 
-std::shared_ptr<spdlog::logger>& Logger::get_logger() {
+std::shared_ptr<spdlog::logger> &Logger::get_logger()
+{
     return logger_;
 }

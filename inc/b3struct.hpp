@@ -1,34 +1,6 @@
 #pragma once
 #include "std.hpp"
-#include "utils.hpp"
-#include "logger.hpp"
 
-// 定义 Business Messages ID
-constexpr int SequenceReset_1 = 1;
-constexpr int Sequence_2 = 2;
-constexpr int SecurityStatus = 3;
-constexpr int EmptyBook_9 = 9;
-constexpr int SecurityGroupPhase = 10;
-constexpr int SecurityDefinition = 12;
-constexpr int OpeningPrice = 15;
-constexpr int TheoreticalOpeningPrice = 16;
-constexpr int ClosingPrice = 17;
-constexpr int AuctionImbalance = 19;
-constexpr int PriceBand = 22;
-constexpr int QuantityBand = 21;
-constexpr int HighPrice = 24;
-constexpr int LowPrice = 25;
-constexpr int LastTradePrice = 27;
-constexpr int SettlementPrice = 28;
-constexpr int OpenInterest = 29;
-constexpr int ExecutionStatistics = 56;
-constexpr int Order_MBO = 50;
-constexpr int DeleteOrder_MBO = 51;
-constexpr int MassDeleteOrders_MBO = 52;
-constexpr int Trade = 53;
-constexpr int ForwardTrade = 54;
-constexpr int ExecutionSummary = 55;
-constexpr int SnapshotFullRefresh_Orders_MBO = 71;
 
 #include "AggressorSide.h"
 #include "ApplVerID.h"
@@ -112,3 +84,5 @@ constexpr int SnapshotFullRefresh_Orders_MBO = 71;
 #include "UTCTimestampNanos.h"
 #include "UTCTimestampSeconds.h"
 #include "VarString.h"
+
+

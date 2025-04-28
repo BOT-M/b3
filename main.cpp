@@ -1,10 +1,8 @@
-#include "MulticastConfig.hpp"
-#include "MulticastReceiver.hpp"
-#include "DataProcessor.hpp"
 #include "SignalHandler.hpp"
-#include "xml.hpp"
 #include "logger.hpp"
-
+#include "std.hpp"
+#include <json/json.h>
+#include "Channel.h"
 void signalHandler(int signum)
 {
     std::cout << "\n📢 收到信号 " << signum << "，程序即将退出...\n";
@@ -13,7 +11,7 @@ void signalHandler(int signum)
 
 int main(int argc, char *argv[])
 {
-    Logger::init();  // 初始化日志
+    Logger::init(); // 初始化日志
 
     SignalHandler &handler = SignalHandler::getInstance();
     handler.registerHandler(SIGINT, signalHandler);
@@ -27,20 +25,60 @@ int main(int argc, char *argv[])
     }
     if (filename.empty())
         std::cerr << "未指定组播配置文件" << std::endl;
-
-    MulticastConfig config;
-    if (!config.loadFromFile(filename))
+    std::ifstream file(filename);
+    if (!file.is_open())
     {
+        std::cerr << "Error: Cannot open B3.json" << std::endl;
         return 1;
     }
-   
-    ConcurrentQueue<std::string> dataQueue;
-    DataProcessor processor(dataQueue);
-    std::thread processorThread(&DataProcessor::startProcessing, &processor);
-    MulticastReceiver receiver(config, dataQueue);
-    std::thread receiverThread(&MulticastReceiver::startListening, &receiver);
-    receiverThread.join();
-    processorThread.join();
 
+    Json::Value root;
+    Json::CharReaderBuilder reader;
+    std::string errs;
+
+    // (2) 解析 JSON
+    if (!Json::parseFromStream(reader, file, &root, &errs))
+    {
+        std::cerr << "JSON parse error: " << errs << std::endl;
+        return 1;
+    }
+    B3::B3Config config;
+    // (3) 提取关键字段
+    try
+    {
+        // 读取字符串字段
+        std::string so_path = root["so_path"].asString();
+        std::string local_ip = root["local_ip"].asString();
+
+        // 读取数组中的对象
+        const Json::Value &market = root["market"];
+        if (!market.empty())
+        {
+            const Json::Value &first_market = market[0]; // 取第一个市场配置
+            int channel = first_market["Channel"].asInt();
+            std::string InstrumentDefinition = first_market["InstrumentDefinition"].asString();
+            std::string Incremental = first_market["Incremental"].asString();
+            std::string SnapshotsRecovery = first_market["SnapshotsRecovery"].asString();
+            std::string IncrementalBak = first_market["IncrementalBak"].asString();
+            config = B3::B3Config{local_ip, Incremental, InstrumentDefinition, SnapshotsRecovery, IncrementalBak};
+            // 遍历所有字段（适用于未知结构的JSON）
+            std::cout << "\nAll Market Fields:\n";
+            for (const auto &key : first_market.getMemberNames())
+            {
+                std::cout << "  " << key << ": " << first_market[key].asString() << "\n";
+            }
+        }
+    }
+    catch (const Json::Exception &e)
+    {
+        std::cerr << "JSON access error: " << e.what() << std::endl;
+        return 1;
+    }
+    B3::Channel channel(78, config);
+    channel.Start();
+    while (true)
+    {
+        ::sleep(1);
+    }
     return 0;
 }
