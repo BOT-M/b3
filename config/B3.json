@@ -4,11 +4,10 @@
   "market": [
     {
       "Channel": 74,
-      "Incremental": "233.205.192.11:31074",
-      "InstrumentDefinition": "233.205.192.12:33074",
-      "SnapshotsRecovery": "233.205.192.10:34074",
-      "IncrementalBak.bak": "233.205.192.31:31074",
-      "IncrementalBak": "233.205.192.31:31078"
+      "Incremental": "233.205.192.107:31080",
+      "InstrumentDefinition": "233.205.192.108:33080",
+      "SnapshotsRecovery": "233.205.192.106:34080",
+      "IncrementalBak": "233.205.192.142:31080"
     }
   ]
 }
