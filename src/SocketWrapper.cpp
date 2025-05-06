@@ -7,10 +7,9 @@ namespace B3
         Close();
     }
 
-    bool SocketWrapper::JoinMulticastGroup(const MulticastConfig &config)
+    bool SocketWrapper::JoinMulticastGroup(const MulticastConfig& config)
     {
-        if (is_connected_)
-            return true;
+        if (is_connected_) return true;
 
         fd_ = socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP);
         if (fd_ < 0)
@@ -30,7 +29,7 @@ namespace B3
             JoinGroup(config.group_ip, config.local_ip);
 
             is_connected_ = true;
-            config_ = config;
+            config_       = config;
             return true;
         }
         catch (...)
@@ -45,21 +44,20 @@ namespace B3
         callback_ = std::move(callback);
     }
 
-    void SocketWrapper::StartReceiving(std::atomic<bool> &running_flag)
+    void SocketWrapper::StartReceiving(std::atomic<bool>& running_flag)
     {
         if (!is_connected_)
         {
             throw std::runtime_error("Socket not connected");
         }
 
-        char buffer[2048];
+        char        buffer[2048];
         sockaddr_in src_addr{};
-        socklen_t addr_len = sizeof(src_addr);
-
+        socklen_t   addr_len = sizeof(src_addr);
+        INFO("{}:{}, start receiving", config_.local_ip, config_.port);
         while (running_flag.load())
         {
-            ssize_t len = recvfrom(fd_, buffer, sizeof(buffer), 0,
-                                   (sockaddr *)&src_addr, &addr_len);
+            ssize_t len = recvfrom(fd_, buffer, sizeof(buffer), 0, (sockaddr*) &src_addr, &addr_len);
             if (len > 0 && callback_)
             {
                 callback_(buffer, static_cast<size_t>(len));
@@ -69,6 +67,7 @@ namespace B3
                 ThrowSystemError("Receive error");
             }
         }
+        INFO("{}:{}, stop receiving", config_.local_ip, config_.port);
     }
     void SocketWrapper::Close()
     {
@@ -90,13 +89,19 @@ namespace B3
                 }
             }
             close(fd_);
-            fd_ = -1;
+            fd_           = -1;
             is_connected_ = false;
         }
     }
 
-    bool SocketWrapper::IsConnected() const { return is_connected_; }
-    int SocketWrapper::GetFD() const { return fd_; }
+    bool SocketWrapper::IsConnected() const
+    {
+        return is_connected_;
+    }
+    int SocketWrapper::GetFD() const
+    {
+        return fd_;
+    }
     void SocketWrapper::SetSocketOption(int optname, int value)
     {
         int reuse = value;
@@ -109,17 +114,17 @@ namespace B3
     void SocketWrapper::BindSocket(uint16_t port)
     {
         sockaddr_in local_addr{};
-        local_addr.sin_family = AF_INET;
-        local_addr.sin_port = htons(port);
+        local_addr.sin_family      = AF_INET;
+        local_addr.sin_port        = htons(port);
         local_addr.sin_addr.s_addr = htonl(INADDR_ANY);
 
-        if (bind(fd_, (sockaddr *)&local_addr, sizeof(local_addr)) < 0)
+        if (bind(fd_, (sockaddr*) &local_addr, sizeof(local_addr)) < 0)
         {
             ThrowSystemError("Bind failed");
         }
     }
 
-    void SocketWrapper::JoinGroup(const std::string &group_ip, const std::string &local_ip)
+    void SocketWrapper::JoinGroup(const std::string& group_ip, const std::string& local_ip)
     {
         ip_mreq mreq{};
         inet_pton(AF_INET, group_ip.c_str(), &mreq.imr_multiaddr);
@@ -131,9 +136,8 @@ namespace B3
         }
     }
 
-    void SocketWrapper::ThrowSystemError(const std::string &prefix)
+    void SocketWrapper::ThrowSystemError(const std::string& prefix)
     {
-        throw std::system_error(errno, std::system_category(),
-                                prefix + " (errno: " + std::to_string(errno) + ")");
+        throw std::system_error(errno, std::system_category(), prefix + " (errno: " + std::to_string(errno) + ")");
     }
-} // namespace B3
+}  // namespace B3

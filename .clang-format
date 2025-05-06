@@ -1,0 +1,50 @@
+---
+# 基础风格
+BasedOnStyle: Google
+
+# 缩进和对齐
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+
+# 换行规则
+ColumnLimit: 140
+BreakBeforeBraces: Allman  # 大括号另起一行（Google 默认是 Attach，可选）
+AllowShortFunctionsOnASingleLine: Empty  # 空函数允许写在一行
+
+# 空格规则
+SpacesInParentheses: false
+SpaceAfterCStyleCast: true
+SpaceBeforeParens: ControlStatements  # 控制语句前有空格 if (x)
+SpaceInEmptyParentheses: false
+
+# 指针/引用格式
+PointerAlignment: Left  # int* ptr; 而不是 int *ptr;
+
+# include 排序
+SortIncludes: true
+IncludeBlocks: Regroup
+
+# 命名空间缩进
+NamespaceIndentation: All
+
+# 类成员访问修饰符缩进
+# IndentAccessModifiers: true
+
+# 注释格式
+ReflowComments: true
+CommentPragmas: '^ IWYU pragma:'
+
+# C++11 初始化列表格式
+Cpp11BracedListStyle: true
+
+# 对齐规则（保持一致性）
+AlignConsecutiveAssignments: true
+AlignConsecutiveDeclarations: true
+AlignOperands: true
+AlignTrailingComments: true
+
+# lambda 和 auto 的额外控制
+DerivePointerAlignment: false
+
+

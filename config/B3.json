@@ -1,13 +1,14 @@
 {
-    "so_path": "/home/yueran/work/data_core/build/lib/libinput_b3.so",
-    "local_ip": "10.222.190.14",
-    "market": [
-        {
-            "Channel": 74,
-            "Incremental": "233.205.192.11:31074",
-            "InstrumentDefinition": "233.205.192.12:33074",
-            "SnapshotsRecovery": "233.205.192.10:34074",
-            "IncrementalBak": "233.205.192.28:31068"
-        }
-    ]
+  "so_path": "/home/yueran/work/data_core/build/lib/libinput_b3.so",
+  "local_ip": "10.222.190.14",
+  "market": [
+    {
+      "Channel": 74,
+      "Incremental": "233.205.192.11:31074",
+      "InstrumentDefinition": "233.205.192.12:33074",
+      "SnapshotsRecovery": "233.205.192.10:34074",
+      "IncrementalBak.bak": "233.205.192.31:31074",
+      "IncrementalBak": "233.205.192.31:31078"
+    }
+  ]
 }

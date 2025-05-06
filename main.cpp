@@ -1,19 +1,20 @@
+#include <json/json.h>
+
+#include "Channel.h"
 #include "SignalHandler.hpp"
 #include "logger.hpp"
 #include "std.hpp"
-#include <json/json.h>
-#include "Channel.h"
 void signalHandler(int signum)
 {
     std::cout << "\n📢 收到信号 " << signum << "，程序即将退出...\n";
     exit(0);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    Logger::init(); // 初始化日志
+    Logger::init();  // 初始化日志
 
-    SignalHandler &handler = SignalHandler::getInstance();
+    SignalHandler& handler = SignalHandler::getInstance();
     handler.registerHandler(SIGINT, signalHandler);
     handler.registerHandler(SIGTERM, signalHandler);
 
@@ -23,8 +24,7 @@ int main(int argc, char *argv[])
         std::cout << "argv:" << argv[1] << std::endl;
         filename = argv[1];
     }
-    if (filename.empty())
-        std::cerr << "未指定组播配置文件" << std::endl;
+    if (filename.empty()) std::cerr << "未指定组播配置文件" << std::endl;
     std::ifstream file(filename);
     if (!file.is_open())
     {
@@ -32,9 +32,9 @@ int main(int argc, char *argv[])
         return 1;
     }
 
-    Json::Value root;
+    Json::Value             root;
     Json::CharReaderBuilder reader;
-    std::string errs;
+    std::string             errs;
 
     // (2) 解析 JSON
     if (!Json::parseFromStream(reader, file, &root, &errs))
@@ -47,29 +47,30 @@ int main(int argc, char *argv[])
     try
     {
         // 读取字符串字段
-        std::string so_path = root["so_path"].asString();
+        std::string so_path  = root["so_path"].asString();
         std::string local_ip = root["local_ip"].asString();
 
         // 读取数组中的对象
-        const Json::Value &market = root["market"];
+        const Json::Value& market = root["market"];
         if (!market.empty())
         {
-            const Json::Value &first_market = market[0]; // 取第一个市场配置
-            int channel = first_market["Channel"].asInt();
+            const Json::Value& first_market  = market[0];  // 取第一个市场配置
+            int                channel       = first_market["Channel"].asInt();
             std::string InstrumentDefinition = first_market["InstrumentDefinition"].asString();
-            std::string Incremental = first_market["Incremental"].asString();
-            std::string SnapshotsRecovery = first_market["SnapshotsRecovery"].asString();
-            std::string IncrementalBak = first_market["IncrementalBak"].asString();
-            config = B3::B3Config{local_ip, Incremental, InstrumentDefinition, SnapshotsRecovery, IncrementalBak};
+            std::string Incremental          = first_market["Incremental"].asString();
+            std::string SnapshotsRecovery    = first_market["SnapshotsRecovery"].asString();
+            std::string IncrementalBak       = first_market["IncrementalBak"].asString();
+            config = B3::B3Config{local_ip, Incremental, InstrumentDefinition, SnapshotsRecovery,
+                                  IncrementalBak};
             // 遍历所有字段（适用于未知结构的JSON）
             std::cout << "\nAll Market Fields:\n";
-            for (const auto &key : first_market.getMemberNames())
+            for (const auto& key : first_market.getMemberNames())
             {
                 std::cout << "  " << key << ": " << first_market[key].asString() << "\n";
             }
         }
     }
-    catch (const Json::Exception &e)
+    catch (const Json::Exception& e)
     {
         std::cerr << "JSON access error: " << e.what() << std::endl;
         return 1;

@@ -6,18 +6,19 @@
 #include <iostream>
 #include <unordered_map>
 
-class SignalHandler {
-public:
+class SignalHandler
+{
+   public:
     using SignalCallback = std::function<void(int)>;
 
     static SignalHandler& getInstance();
 
-    void registerHandler(int signal, SignalCallback callback);
+    void        registerHandler(int signal, SignalCallback callback);
     static void handleSignal(int signal);
 
-private:
+   private:
     SignalHandler() = default;
     static std::unordered_map<int, SignalCallback> signalCallbacks;
 };
 
-#endif // SIGNAL_HANDLER_HPP
+#endif  // SIGNAL_HANDLER_HPP

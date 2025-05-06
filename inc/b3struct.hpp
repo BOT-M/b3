@@ -1,7 +1,4 @@
 #pragma once
-#include "std.hpp"
-
-
 #include "AggressorSide.h"
 #include "ApplVerID.h"
 #include "AuctionImbalance_19.h"
@@ -84,5 +81,4 @@
 #include "UTCTimestampNanos.h"
 #include "UTCTimestampSeconds.h"
 #include "VarString.h"
-
-
+#include "std.hpp"
