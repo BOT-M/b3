@@ -75,6 +75,8 @@ namespace B3
         virtual void HandleSnapshotFullRefreshHeader30(const b3_market_data::SnapshotFullRefresh_Header_30& msg){};
         virtual void HandlOrderMBO50(const b3_market_data::Order_MBO_50& msg){};
 
+        virtual const char* GetStreamName() const;
+
        public:
         virtual void StartProcessing()                                                = 0;
         virtual bool HandlePacketSeq(uint32_t sequence_number)                        = 0;
@@ -112,6 +114,8 @@ namespace B3
         void HandleSecurityDefinition12(const b3_market_data::SecurityDefinition_12& msg) override;
         void HandlOrderMBO50(const b3_market_data::Order_MBO_50& msg) override;
 
+        const char* GetStreamName() const override;
+
         void SetLastMsgSeqNumProcessed(uint32_t seq);
 
        private:
@@ -129,6 +133,8 @@ namespace B3
         void HandleSequenceReset1(const b3_market_data::SequenceReset_1& msg) override;
         void HandleSnapshotFullRefreshHeader30(const b3_market_data::SnapshotFullRefresh_Header_30& msg) override;
 
+        const char* GetStreamName() const override;
+
        public:
        private:
         uint32_t tot_num_reports_{0};
@@ -144,6 +150,8 @@ namespace B3
         bool HandlePacketSeq(uint32_t sequence_number) override;
         void HandleSequenceReset1(const b3_market_data::SequenceReset_1& msg) override;
         void HandleSecurityDefinition12(const b3_market_data::SecurityDefinition_12& msg) override;
+
+        const char* GetStreamName() const override;
 
        public:
        private:

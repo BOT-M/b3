@@ -3,11 +3,11 @@
   "local_ip": "10.222.190.14",
   "market": [
     {
-      "Channel": 74,
-      "Incremental": "233.205.192.107:31080",
+      "Channel": 80,
+      "Incremental": "233.205.192.106:34080",
       "InstrumentDefinition": "233.205.192.108:33080",
       "SnapshotsRecovery": "233.205.192.106:34080",
-      "IncrementalBak": "233.205.192.142:31080"
+      "IncrementalBak": "233.205.192.28:31068"
     }
   ]
 }

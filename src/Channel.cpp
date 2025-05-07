@@ -9,7 +9,8 @@ namespace B3
     void processMessage(char* buffer, size_t bufferLength)
     {
         std::stringstream ss;
-        T                 message(buffer, bufferLength);
+
+        T message(buffer, bufferLength);
         ss << message;
         INFO("== {}", ss.str());
     }
@@ -30,11 +31,17 @@ namespace B3
         socket_->StartReceiving(running_flag_);
     }
 
+    const char* Stream::GetStreamName() const
+    {
+        return "Stream";
+    }
+
     size_t Stream::HandlePacket(char* data, std::size_t len)
     {
-        std::stringstream            ss;
+        std::stringstream ss;
+        ss << config_.group_ip << ":" << config_.port << " [" << GetStreamName() << "] ";
         b3_market_data::PacketHeader packHead(data, len);
-        ss << config_.group_ip << " " << config_.port << " === ";
+
         ss << packHead;
         INFO("{}", ss.str());
 
@@ -65,8 +72,7 @@ namespace B3
             b3_market_data::FramingHeader framHead(data + offset, len - offset);
             ss.str("");
             ss.clear();
-            ss << config_.group_ip << " " << config_.port;
-            ss << " +++ ";
+            ss << config_.group_ip << ":" << config_.port << " [" << GetStreamName() << "]  ";
 
             ss << framHead;
             offset += framHead.encodedLength();
@@ -84,9 +90,7 @@ namespace B3
     void Stream::HandleMessage(const size_t id, char* buffer, const std::uint64_t bufferLength)
     {
         std::stringstream ss;
-        ss.str("");
-        ss.clear();
-        ss << config_.group_ip << " " << config_.port << " --- ";
+        ss << config_.group_ip << ":" << config_.port << " [" << GetStreamName() << "] ";
         switch (id)
         {
             case 1:
@@ -313,6 +317,10 @@ namespace B3
         : Stream(config, orderbooks)
     {
     }
+    const char* IncrementalStream::GetStreamName() const
+    {
+        return "IncrementalStream";
+    }
     void IncrementalStream::StartProcessing()
     {
         Stream::Start();
@@ -369,6 +377,11 @@ namespace B3
         : Stream(config, orderbooks)
     {
     }
+
+    const char* SnapshotsRecoveryStream::GetStreamName() const
+    {
+        return "SnapshotsRecoveryStream";
+    }
     void SnapshotsRecoveryStream::StartProcessing()
     {
         Stream::Start();
@@ -386,9 +399,8 @@ namespace B3
     void SnapshotsRecoveryStream::HandleSequenceReset1(const b3_market_data::SequenceReset_1& msg)
     {
         std::stringstream ss;
-        INFO("=== receive SnapshotsRecoveryStream SequenceReset_1");
-        INFO("=== last_sequence_numbers_:{}, tot_num_reports_:{}, orderbooks_.size():{}", last_sequence_numbers_, tot_num_reports_,
-             orderbooks_.size());
+        INFO("[SnapshotsRecoveryStream] SequenceReset_1 last_sequence_numbers_:{}, tot_num_reports_:{}, orderbooks_.size():{}",
+             last_sequence_numbers_, tot_num_reports_, orderbooks_.size());
         for (const auto& order : orderbooks_)
         {
             // char *src = order.second;
@@ -397,7 +409,7 @@ namespace B3
         }
         if (tot_num_reports_ == orderbooks_.size())
         {
-            INFO("=== receive SnapshotsRecoveryStream SequenceReset_1, all orderbooks_ received");
+            INFO("[SnapshotsRecoveryStream] SequenceReset_1, all orderbooks_ received");
             running_flag_.store(false);
             return;
         }
@@ -428,6 +440,11 @@ namespace B3
     {
         last_sequence_numbers_ = 1;
     }
+
+    const char* InstrumentDefinitionStream::GetStreamName() const
+    {
+        return "InstrumentDefinitionStream";
+    }
     void InstrumentDefinitionStream::StartProcessing()
     {
         Stream::Start();
@@ -445,9 +462,8 @@ namespace B3
     }
     void InstrumentDefinitionStream::HandleSequenceReset1(const b3_market_data::SequenceReset_1& msg)
     {
-        INFO("receive InstrumentDefinitionStream SequenceReset_1");
-        INFO("last_sequence_numbers_:{}, tot_no_related_sym_:{}, orderbooks_.size():{}", last_sequence_numbers_, tot_no_related_sym_,
-             orderbooks_.size());
+        INFO("[InstrumentDefinitionStream] last_sequence_numbers_:{}, tot_no_related_sym_:{}, orderbooks_.size():{}",
+             last_sequence_numbers_, tot_no_related_sym_, orderbooks_.size());
         std::stringstream ss;
         for (const auto& order : orderbooks_)
         {
@@ -488,6 +504,7 @@ namespace B3
     {
         std::cout << "Create channel" << std::endl;
     }
+
     bool Channel::Start()
     {
         if (running_.exchange(true)) return true;
