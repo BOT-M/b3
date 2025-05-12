@@ -43,7 +43,7 @@ namespace B3
         b3_market_data::PacketHeader packHead(data, len);
 
         ss << packHead;
-        INFO("{}", ss.str());
+        // INFO("{}", ss.str());
 
         uint32_t sequenceNumber = packHead.sequenceNumber();
         if (!HandlePacketSeq(sequenceNumber))
@@ -79,7 +79,7 @@ namespace B3
 
             b3_market_data::MessageHeader msgHead(data + offset, len - offset);
             ss << msgHead;
-            INFO("{}", ss.str());
+            // INFO("{}", ss.str());
             offset += msgHead.encodedLength();
 
             HandleMessage(msgHead.templateId(), data + offset, len - offset);
@@ -102,6 +102,7 @@ namespace B3
             break;
             case 2:
             {
+                return;
                 b3_market_data::Sequence_2 msg(buffer, bufferLength);
                 HandleSequence2(msg);
                 ss << msg;
@@ -331,12 +332,20 @@ namespace B3
     }
     bool IncrementalStream::HandlePacketSeq(uint32_t sequence_number)
     {
+        //  if (current_sequence_version_ != sequence_version)
+        //  {
+        //      // 处理SequenceVersion变更
+        //      current_sequence_version_ = sequence_version;
+        //      last_sequence_numbers_    = sequence_number;  // 重置为当前sequence_number
+        //      return true;                                  // 或者根据协议决定是否需要校验
+        //  }
+        // 原有的处理逻辑
         // todo: if (sequence_number < last_msg_seq_num_processed) return false;
-        if (sequence_number != 0 && last_sequence_numbers_ + 1 != sequence_number)
-        {
-            return false;
-        }
-        last_sequence_numbers_ = sequence_number;
+        // if (sequence_number != 0 && last_sequence_numbers_ + 1 != sequence_number)
+        // {
+        //     return false;
+        // }
+        // last_sequence_numbers_ = sequence_number;
         return true;
     }
     void IncrementalStream::HandleSequenceReset1(const b3_market_data::SequenceReset_1& msg)
@@ -347,8 +356,8 @@ namespace B3
     void IncrementalStream::HandleSecurityDefinition12(const b3_market_data::SecurityDefinition_12& msg)
     {
         // LastFragment = true; 表是结束
-        if (orderbooks_.find(msg.securityID()) == orderbooks_.end()) orderbooks_[msg.securityID()] = std::make_shared<OrderBook>();
-        orderbooks_[msg.securityID()]->s_security_definition_12_.assign(msg.buffer(), msg.buffer() + msg.bufferLength());
+        // if (orderbooks_.find(msg.securityID()) == orderbooks_.end()) orderbooks_[msg.securityID()] = std::make_shared<OrderBook>();
+        // orderbooks_[msg.securityID()]->s_security_definition_12_.assign(msg.buffer(), msg.buffer() + msg.bufferLength());
     }
 
     void IncrementalStream::HandlEmptyBook9(const b3_market_data::EmptyBook_9& msg)

@@ -10,10 +10,30 @@ void signalHandler(int signum)
     exit(0);
 }
 
+std::vector<std::string> split(const std::string& str, char delimiter)
+{
+    std::vector<std::string> result;
+    std::string              token;
+
+    for (char ch : str)
+    {
+        if (ch == delimiter)
+        {
+            if (!token.empty()) result.push_back(token);
+            token.clear();
+        }
+        else
+        {
+            token += ch;
+        }
+    }
+    if (!token.empty()) result.push_back(token);  // 最后一个部分
+
+    return result;
+}
+
 int main(int argc, char* argv[])
 {
-    Logger::init();  // 初始化日志
-
     SignalHandler& handler = SignalHandler::getInstance();
     handler.registerHandler(SIGINT, signalHandler);
     handler.registerHandler(SIGTERM, signalHandler);
@@ -24,7 +44,13 @@ int main(int argc, char* argv[])
         std::cout << "argv:" << argv[1] << std::endl;
         filename = argv[1];
     }
+
     if (filename.empty()) std::cerr << "未指定组播配置文件" << std::endl;
+
+    std::vector<std::string> parts = split(filename, '.');
+
+    std::string log_dir = "logs/" + parts[0];
+    Logger::init(log_dir);  // 初始化日志
     std::ifstream file(filename);
     if (!file.is_open())
     {
@@ -54,14 +80,13 @@ int main(int argc, char* argv[])
         const Json::Value& market = root["market"];
         if (!market.empty())
         {
-            const Json::Value& first_market  = market[0];  // 取第一个市场配置
-            int                channel       = first_market["Channel"].asInt();
-            std::string InstrumentDefinition = first_market["InstrumentDefinition"].asString();
-            std::string Incremental          = first_market["Incremental"].asString();
-            std::string SnapshotsRecovery    = first_market["SnapshotsRecovery"].asString();
-            std::string IncrementalBak       = first_market["IncrementalBak"].asString();
-            config = B3::B3Config{local_ip, Incremental, InstrumentDefinition, SnapshotsRecovery,
-                                  IncrementalBak};
+            const Json::Value& first_market         = market[0];  // 取第一个市场配置
+            int                channel              = first_market["Channel"].asInt();
+            std::string        InstrumentDefinition = first_market["InstrumentDefinition"].asString();
+            std::string        Incremental          = first_market["Incremental"].asString();
+            std::string        SnapshotsRecovery    = first_market["SnapshotsRecovery"].asString();
+            std::string        IncrementalBak       = first_market["IncrementalBak"].asString();
+            config = B3::B3Config{local_ip, Incremental, InstrumentDefinition, SnapshotsRecovery, IncrementalBak};
             // 遍历所有字段（适用于未知结构的JSON）
             std::cout << "\nAll Market Fields:\n";
             for (const auto& key : first_market.getMemberNames())

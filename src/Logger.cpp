@@ -1,25 +1,31 @@
 #include "logger.hpp"
 
-#include <iostream>
-#include <iomanip>
-#include <sstream>
 #include <chrono>
 #include <ctime>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 
 std::shared_ptr<spdlog::logger> Logger::logger_ = nullptr;
 
-std::string GenerateLogFilename(const std::string &log_dir)
+std::string GenerateLogFilename(const std::string& log_dir)
 {
-    auto now = std::chrono::system_clock::now();
-    std::time_t now_time = std::chrono::system_clock::to_time_t(now);
+    // auto now = std::chrono::system_clock::now();
+    // std::time_t now_time = std::chrono::system_clock::to_time_t(now);
 
-    std::stringstream ss;
-    ss << log_dir << "/B3_"
-       << std::put_time(std::localtime(&now_time), "%Y-%m-%d_%H-%M-%S")
-       << ".log";
-    return ss.str();
+    // std::stringstream ss;
+    // ss << log_dir << "/B3_"
+    //    << std::put_time(std::localtime(&now_time), "%Y-%m-%d_%H-%M-%S")
+    //    << ".log";
+    // 获取当前线程ID
+    std::thread::id thread_id = std::this_thread::get_id();
+
+    // 将线程ID转换为字符串
+    std::ostringstream oss;
+    oss << log_dir << "_" << thread_id << ".log";
+    return oss.str();
 }
-void Logger::init(const std::string &log_dir, size_t max_size, size_t max_files)
+void Logger::init(const std::string& log_dir, size_t max_size, size_t max_files)
 {
     std::string log_filename = GenerateLogFilename(log_dir);
 
@@ -42,7 +48,7 @@ void Logger::init(const std::string &log_dir, size_t max_size, size_t max_files)
     spdlog::info("Logger initialized.");
 }
 
-std::shared_ptr<spdlog::logger> &Logger::get_logger()
+std::shared_ptr<spdlog::logger>& Logger::get_logger()
 {
     return logger_;
 }
